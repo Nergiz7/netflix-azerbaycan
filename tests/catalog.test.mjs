@@ -64,7 +64,7 @@ test('classics are all before 1991 and the collection includes newer cinema', ()
 
 test('full-film sources use the verified YouTube provider metadata', () => {
   const films = movies.filter(movie => movie.fullFilm);
-  assert.equal(films.length, 11);
+  assert.equal(films.length, 26);
   for (const movie of films) {
     assert.equal(movie.provider, 'youtube');
     assert.match(movie.fullFilm, /^https:\/\/www\.youtube\.com\/watch\?v=/);
