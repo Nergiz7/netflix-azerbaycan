@@ -5,6 +5,7 @@ import ts from 'typescript';
 
 const filename = new URL('../lib/movies.ts', import.meta.url);
 const sourceText = readFileSync(filename, 'utf8');
+const pageText = readFileSync(new URL('../app/page.tsx', import.meta.url), 'utf8');
 const sourceFile = ts.createSourceFile(filename.pathname, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
 const constants = new Map();
 let catalog;
@@ -71,12 +72,21 @@ test('full-film sources use the verified YouTube provider metadata', () => {
   }
 });
 
+test('homepage uses one hero player and a single on-demand card preview', () => {
+  assert.match(pageText, /YouTubeEmbed url=\{featured\.fullFilm!/);
+  assert.match(pageText, /previewing&&movie\.fullFilm/);
+  assert.match(pageText, /activePreviewId===previewId/);
+  assert.match(pageText, /loading='lazy'/);
+  assert.doesNotMatch(pageText, /artwork-badge/);
+});
+
 test('every catalog film has its own original, local illustration asset', () => {
   const artwork = movies.map(movie => {
     const file = new URL(`../public/posters/${movie.id}.svg`, import.meta.url);
     const svg = readFileSync(file, 'utf8');
     assert.match(svg, /<svg\s/);
-    assert.match(svg, /ORİJİNAL İLLÜSTRASİYA/);
+    assert.doesNotMatch(svg, /ORİJİNAL İLLÜSTRASİYA/);
+    assert.match(svg, /<desc\b/);
     assert.doesNotMatch(svg, /AZƏRBAYCAN KİNOSU/);
     return svg;
   });
